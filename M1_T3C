@@ -1,0 +1,67 @@
+#define MOTION_SENSOR_PIN 5
+#define BUTTON_PIN 3
+#define LED_1 6
+#define LED_2 10
+#define IRSensorPin 8
+
+
+int motionState = 0;
+bool buttonPressed = false;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(MOTION_SENSOR_PIN, INPUT);
+  pinMode(BUTTON_PIN, INPUT_PULLUP); 
+  pinMode(LED_1, OUTPUT);
+  pinMode(IRSensorPin, INPUT);
+
+  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), buttonInterrupt, CHANGE);
+}
+
+void loop() {
+    buttonPressed = digitalRead(BUTTON_PIN) == LOW;
+  if (!buttonPressed) {
+    motionSensor();
+     IRSensor();   
+  } 
+  else{
+     buttonInterrupt();
+  }
+    
+}
+
+void IRSensor()
+{
+  int IRSensorValue = digitalRead(IRSensorPin);
+
+  if (IRSensorValue == HIGH) {
+    Serial.println("Obstacle detected!");
+    digitalWrite(LED_2, HIGH); 
+  } else {
+    Serial.println("No obstacle");
+    digitalWrite(LED_2, LOW);  
+  }
+  delay(500); 
+}
+
+void motionSensor()
+{
+   motionState = digitalRead(MOTION_SENSOR_PIN);
+    Serial.print("Motion Sensor: ");
+    Serial.println(motionState);
+    if (motionState == HIGH) {
+      digitalWrite(LED_1, HIGH);
+      Serial.println("LED: ON");
+    } else {
+      digitalWrite(LED_1, LOW);
+      Serial.println("LED: OFF");
+    }
+    delay(500);
+}
+void buttonInterrupt() {
+  // If button is pressed
+    digitalWrite(LED_1, HIGH); 
+  Serial.println("Interrupted!!");
+ 
+  delay(50);
+}
